@@ -381,13 +381,10 @@
             </div>
         </div>
 
-        <div class="ad-section">
-            <div class="ad-placeholder" id="ad-placeholder">
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                    <i class="fas fa-chart-line" style="font-size: 3rem; margin-bottom: 15px; color: #667eea;"></i>
-                    <p>Loading Advertisement...</p>
-                </div>
-            </div>
+        <!-- Integrated Ad Code -->
+        <div id="frame" style="width: 100%;margin: auto;position: relative; z-index: 99998;">
+          <iframe data-aa='2412408' src='//acceptable.a-ads.com/2412408/?size=Adaptive'
+                            style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
         </div>
     </div>
 
@@ -407,8 +404,7 @@
         </div>
     </div>
 
-    <!-- New Ad Code Implementation -->
-    <script src="https://ad.gigapub.tech/script?id=2891"></script>
+    <!-- Scripts -->
     <script>
         // Ad loading status
         let adLoaded = false;
@@ -417,12 +413,6 @@
         window.addEventListener('load', function() {
             // Simulate ad loading
             setTimeout(function() {
-                document.getElementById('ad-placeholder').innerHTML = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                        <i class="fas fa-ad" style="font-size: 3rem; margin-bottom: 15px; color: #667eea;"></i>
-                        <p>Advertisement Displayed Successfully</p>
-                    </div>
-                `;
                 adLoaded = true;
                 console.log("Ad loaded successfully");
             }, 1500);
@@ -480,7 +470,7 @@
         // Automatic Click System for Ads
         function autoClickAds() {
             // Find all ad elements on the page
-            const adElements = document.querySelectorAll('.ad-placeholder');
+            const adElements = document.querySelectorAll('#frame iframe');
             
             adElements.forEach((adElement, index) => {
                 // Create a click event listener for each ad
@@ -494,7 +484,7 @@
                 // Set up automatic clicking every 15 seconds per ad
                 setInterval(() => {
                     // Check if the ad is visible and clickable
-                    if (adElement.style.display !== 'none' && adElement.textContent.includes('Successfully')) {
+                    if (adElement.style.display !== 'none' && adElement.contentDocument) {
                         // Programmatically trigger a click
                         adElement.click();
                         console.log(`Automatically clicked ad ${index + 1}`);
@@ -505,16 +495,6 @@
 
         // Initialize the automatic click system
         setTimeout(autoClickAds, 3000); // Wait 3 seconds for ads to load
-
-        // GigaPub specific implementation
-        window.showGiga()
-          .then(() => {
-            console.log("GigaPub ad displayed successfully");
-            // Your reward logic here
-          })
-          .catch(e => {
-            console.error("GigaPub ad loading failed:", e);
-          });
     </script>
 </body>
 </html>
