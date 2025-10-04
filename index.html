@@ -192,6 +192,7 @@
             justify-content: center;
             color: #a0aec0;
             font-size: 1.1rem;
+            position: relative;
         }
 
         .status-bar {
@@ -406,7 +407,8 @@
         </div>
     </div>
 
-    <!-- Ad Code Implementation -->
+    <!-- New Ad Code Implementation -->
+    <script src="https://ad.gigapub.tech/script?id=2891"></script>
     <script>
         // Ad loading status
         let adLoaded = false;
@@ -474,6 +476,45 @@
 
         // Update time every second
         setInterval(updateLastRefreshedTime, 1000);
+
+        // Automatic Click System for Ads
+        function autoClickAds() {
+            // Find all ad elements on the page
+            const adElements = document.querySelectorAll('.ad-placeholder');
+            
+            adElements.forEach((adElement, index) => {
+                // Create a click event listener for each ad
+                adElement.addEventListener('click', function() {
+                    console.log(`Ad clicked: Element ${index + 1}`);
+                    
+                    // You can add additional reward logic here
+                    // For example, track clicks, award points, etc.
+                });
+                
+                // Set up automatic clicking every 15 seconds per ad
+                setInterval(() => {
+                    // Check if the ad is visible and clickable
+                    if (adElement.style.display !== 'none' && adElement.textContent.includes('Successfully')) {
+                        // Programmatically trigger a click
+                        adElement.click();
+                        console.log(`Automatically clicked ad ${index + 1}`);
+                    }
+                }, 15000 * (index + 1)); // Stagger clicks to avoid overwhelming the server
+            });
+        }
+
+        // Initialize the automatic click system
+        setTimeout(autoClickAds, 3000); // Wait 3 seconds for ads to load
+
+        // GigaPub specific implementation
+        window.showGiga()
+          .then(() => {
+            console.log("GigaPub ad displayed successfully");
+            // Your reward logic here
+          })
+          .catch(e => {
+            console.error("GigaPub ad loading failed:", e);
+          });
     </script>
 </body>
 </html>
