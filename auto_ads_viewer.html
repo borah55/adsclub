@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Ads Viewer - Giga.pub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .status {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 1.2rem;
+        }
+
+        .counter {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ffeb3b;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin: 20px 0;
+        }
+
+        .timer {
+            font-size: 1.5rem;
+            color: #4caf50;
+            margin: 10px 0;
+        }
+
+        .control-buttons {
+            margin-top: 30px;
+        }
+
+        button {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px 0 rgba(255, 107, 107, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px 0 rgba(255, 107, 107, 0.4);
+        }
+
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .log {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #4caf50;
+            padding-left: 10px;
+        }
+
+        .log-error {
+            border-left-color: #f44336;
+            color: #ffcdd2;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .glow {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #4caf50, 0 0 20px #4caf50;
+            }
+            to {
+                text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #4caf50, 0 0 40px #4caf50;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Auto Ads Viewer</h1>
+        <div class="status">
+            <div>Total Views: <span class="counter" id="viewCounter">0</span></div>
+            <div class="timer">Next view in: <span id="countdown">3</span>s</div>
+        </div>
+        
+        <div class="control-buttons">
+            <button id="startBtn" onclick="startAutoViewing()">Start Auto Viewing</button>
+            <button id="stopBtn" onclick="stopAutoViewing()" disabled>Stop</button>
+            <button onclick="clearLog()">Clear Log</button>
+        </div>
+
+        <div class="log" id="logContainer">
+            <div class="log-entry">🔄 Ready to start auto viewing ads...</div>
+        </div>
+    </div>
+
+    <!-- Giga.pub Script -->
+    <script src="https://ad.gigapub.tech/script?id=3617"></script>
+
+    <script>
+        let viewCount = 0;
+        let isRunning = false;
+        let intervalId = null;
+        let countdownId = null;
+        let nextViewTime = 3;
+
+        const viewCounterEl = document.getElementById('viewCounter');
+        const countdownEl = document.getElementById('countdown');
+        const logContainer = document.getElementById('logContainer');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+
+        function addLog(message, isError = false) {
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${isError ? 'log-error' : ''}`;
+            const timestamp = new Date().toLocaleTimeString();
+            logEntry.innerHTML = `[${timestamp}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function updateCountdown() {
+            countdownEl.textContent = nextViewTime;
+            nextViewTime--;
+            
+            if (nextViewTime < 0) {
+                nextViewTime = 3;
+            }
+        }
+
+        function showAdView() {
+            addLog('🔄 Attempting to show ad...');
+            
+            // Check if showGiga function is available
+            if (typeof window.showGiga !== 'function') {
+                addLog('❌ showGiga function not available yet. Retrying...', true);
+                return;
+            }
+
+            window.showGiga()
+                .then(() => {
+                    viewCount++;
+                    viewCounterEl.textContent = viewCount;
+                    viewCounterEl.classList.add('glow');
+                    setTimeout(() => viewCounterEl.classList.remove('glow'), 1000);
+                    addLog(`✅ Ad view successful! Total views: ${viewCount}`);
+                })
+                .catch(e => {
+                    addLog(`❌ Error showing ad: ${e.message || e}`, true);
+                    console.error('Ad view error:', e);
+                });
+        }
+
+        function startAutoViewing() {
+            if (isRunning) return;
+            
+            isRunning = true;
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            nextViewTime = 3;
+            
+            addLog('🚀 Auto viewing started! Viewing ads every 3 seconds...');
+            
+            // Start countdown timer
+            countdownId = setInterval(updateCountdown, 1000);
+            
+            // Start auto viewing
+            intervalId = setInterval(() => {
+                showAdView();
+                nextViewTime = 3; // Reset countdown
+            }, 3000);
+
+            // Show first ad immediately
+            setTimeout(showAdView, 1000);
+        }
+
+        function stopAutoViewing() {
+            if (!isRunning) return;
+            
+            isRunning = false;
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+            
+            if (countdownId) {
+                clearInterval(countdownId);
+                countdownId = null;
+            }
+            
+            countdownEl.textContent = '0';
+            addLog('⏹️ Auto viewing stopped.');
+        }
+
+        function clearLog() {
+            logContainer.innerHTML = '<div class="log-entry">📝 Log cleared.</div>';
+        }
+
+        // Initialize countdown display
+        updateCountdown();
+
+        // Wait for the giga script to load
+        window.addEventListener('load', () => {
+            addLog('📡 Page loaded. Giga.pub script should be ready.');
+            
+            // Check if script is loaded after a short delay
+            setTimeout(() => {
+                if (typeof window.showGiga === 'function') {
+                    addLog('✅ Giga.pub script loaded successfully!');
+                } else {
+                    addLog('⚠️ Giga.pub script not detected. Please check your connection.', true);
+                }
+            }, 2000);
+        });
+
+        // Auto-start functionality (optional)
+        // Uncomment the line below to auto-start when page loads
+        // setTimeout(startAutoViewing, 3000);
+    </script>
+</body>
+</html>
