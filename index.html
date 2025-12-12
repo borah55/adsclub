@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Token Earner - Link & Earn</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://telegram.org/js/telegram-web-app.js?59"></script>
+</head>
+<body>
+    <div id="app" class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 class="app-title">🚀 Token Earner</h1>
+                    <span class="app-subtitle">Earn tokens by visiting links</span>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
+                            <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <span id="username" class="username">User</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Stats Overview -->
+            <section class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="16" cy="16" r="14" fill="#FFB800" opacity="0.2"/>
+                                <circle cx="16" cy="16" r="10" fill="#FFB800"/>
+                                <path d="M16 8L20 14H12L16 8Z" fill="white"/>
+                                <path d="M16 24L12 18H20L16 24Z" fill="white"/>
+                                <circle cx="16" cy="16" r="4" fill="white"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="tokenCount">0</div>
+                            <div class="stat-label">Total Tokens</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="16" cy="16" r="12" stroke="#34C759" stroke-width="2"/>
+                                <path d="M16 8v8l4 4" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="sessionCount">0</div>
+                            <div class="stat-label">Visits Today</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Action Section -->
+            <section class="action-section">
+                <div class="action-card">
+                    <div class="action-header">
+                        <h2 class="action-title">💰 Earn 100 Tokens</h2>
+                        <p class="action-description">Visit the link below and wait 10 seconds to claim your reward</p>
+                    </div>
+                    
+                    <button id="earnButton" class="earn-button">
+                        <div class="button-content">
+                            <span class="button-icon">🔗</span>
+                            <span class="button-text">Visit Link & Earn</span>
+                        </div>
+                        <div class="button-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill"></div>
+                            </div>
+                        </div>
+                    </button>
+                    
+                    <div id="timerDisplay" class="timer-display" style="display: none;">
+                        <div class="timer-card">
+                            <div class="timer-icon">⏱️</div>
+                            <div class="timer-content">
+                                <div class="timer-text">Link visited! Waiting...</div>
+                                <div class="timer-count">
+                                    <span id="countdown">10</span>s remaining
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Progress Section -->
+            <section class="progress-section">
+                <div class="progress-card">
+                    <div class="progress-header">
+                        <h3 class="progress-title">🎯 Daily Progress</h3>
+                        <span class="progress-subtitle">Track your earning goals</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-track">
+                            <div class="progress-fill-daily" id="dailyProgress"></div>
+                        </div>
+                        <div class="progress-labels">
+                            <span class="progress-start">0</span>
+                            <span class="progress-end">1000</span>
+                        </div>
+                    </div>
+                    <div class="progress-stats">
+                        <span id="dailyEarned">0 earned today</span>
+                        <span id="dailyRemaining">1000 to goal</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- History Section -->
+            <section class="history-section">
+                <h2 class="section-title">📊 Recent Earnings</h2>
+                <div id="historyList" class="history-list">
+                    <div class="empty-state">
+                        <div class="empty-icon">🎯</div>
+                        <h3>Start Earning Now!</h3>
+                        <p>Visit your first link to begin earning tokens</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Success Toast -->
+    <div id="successToast" class="toast success-toast" style="display: none;">
+        <div class="toast-content">
+            <div class="toast-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            </div>
+            <span class="toast-message">100 Tokens Added!</span>
+        </div>
+    </div>
+
+    <!-- Error Toast -->
+    <div id="errorToast" class="toast error-toast" style="display: none;">
+        <div class="toast-content">
+            <div class="toast-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+                    <path d="M15 9L9 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M9 9L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <span class="toast-message">Something went wrong. Try again!</span>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
